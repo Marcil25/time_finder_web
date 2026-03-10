@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flight Time Calculator</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d1b2a;
+      color: #e0e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      background: #162032;
+      border: 1px solid #1e3a5f;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .card-header svg {
+      color: #4a9eff;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #c8dff5;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: #5a7fa8;
+      margin-top: 0.15rem;
+    }
+
+    /* Section blocks */
+    .section {
+      background: #0f2236;
+      border: 1px solid #1e3a5f;
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #4a9eff;
+      margin-bottom: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #1e3a5f;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #5a7fa8;
+      margin-bottom: 0.35rem;
+    }
+
+    .time-input {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      background: #0d1b2a;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      color: #c8dff5;
+      font-size: 1.25rem;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.1em;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
+
+    .time-input::placeholder {
+      color: #1e3a5f;
+      letter-spacing: 0.05em;
+    }
+
+    .time-input:focus {
+      outline: none;
+      border-color: #4a9eff;
+      box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.15);
+    }
+
+    .time-input.error {
+      border-color: #ff6b6b;
+    }
+
+    .overnight-note {
+      font-size: 0.7rem;
+      color: #4a9eff;
+      margin-top: 0.5rem;
+      text-align: center;
+      min-height: 1rem;
+    }
+
+    /* Result rows */
+    .results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .result-card {
+      background: #0d1b2a;
+      border: 1px solid #1e3a5f;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .result-card-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3d6080;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-hhmm {
+      font-size: 1.9rem;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      color: #4a9eff;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    .result-hhmm.empty {
+      color: #1e3a5f;
+      font-size: 1.4rem;
+      font-weight: 400;
+    }
+
+    .result-decimal {
+      font-size: 0.88rem;
+      color: #5a7fa8;
+      font-family: 'Courier New', monospace;
+      margin-top: 0.3rem;
+    }
+
+    .result-decimal.empty {
+      color: #1e3a5f;
+    }
+
+    .overnight-badge {
+      display: inline-block;
+      background: rgba(74, 158, 255, 0.1);
+      border: 1px solid rgba(74, 158, 255, 0.25);
+      color: #4a9eff;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 20px;
+      margin-top: 0.35rem;
+      display: block;
+    }
+
+    .error-row {
+      min-height: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+    .btn-clear {
+      width: 100%;
+      padding: 0.6rem;
+      background: transparent;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      color: #3d6080;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-clear:hover {
+      border-color: #4a9eff;
+      color: #4a9eff;
+    }
+
+    .zulu-badge {
+      display: inline-block;
+      background: rgba(74, 158, 255, 0.08);
+      border: 1px solid rgba(74, 158, 255, 0.2);
+      color: #4a9eff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      vertical-align: middle;
+      margin-left: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19 4c-2 0-4 2-4 2l-8.2-1.8a1 1 0 0 0-.9.3L4 6l6 4-2 2-4-1-2 2 6 3z"/>
+      </svg>
+      <div>
+        <h1>Flight Time Calculator</h1>
+        <div class="subtitle">All times in Zulu (UTC) · 24-hour format</div>
+      </div>
+    </div>
+
+    <!-- Block Time Section -->
+    <div class="section">
+      <div class="section-title">Block Time <span class="zulu-badge">Z</span></div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Out</label>
+          <input class="time-input" id="out" maxlength="5" placeholder="00:00" autocomplete="off" />
+        </div>
+        <div class="input-group">
+          <label>In</label>
+          <input class="time-input" id="in" maxlength="5" placeholder="00:00" autocomplete="off" />
+        </div>
+      </div>
+      <div class="overnight-note" id="block-overnight"></div>
+    </div>
+
+    <!-- Flight Time Section -->
+    <div class="section">
+      <div class="section-title">Flight Time <span class="zulu-badge">Z</span></div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Takeoff</label>
+          <input class="time-input" id="takeoff" maxlength="5" placeholder="00:00" autocomplete="off" />
+        </div>
+        <div class="input-group">
+          <label>Landing</label>
+          <input class="time-input" id="landing" maxlength="5" placeholder="00:00" autocomplete="off" />
+        </div>
+      </div>
+      <div class="overnight-note" id="flight-overnight"></div>
+    </div>
+
+    <!-- Error row -->
+    <div class="error-row">
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- Results -->
+    <div class="results">
+      <div class="result-card">
+        <div class="result-card-label">Block Time</div>
+        <div class="result-hhmm empty" id="block-hhmm">--:--</div>
+        <div class="result-decimal empty" id="block-decimal">-.-- h</div>
+      </div>
+      <div class="result-card">
+        <div class="result-card-label">Flight Time</div>
+        <div class="result-hhmm empty" id="flight-hhmm">--:--</div>
+        <div class="result-decimal empty" id="flight-decimal">-.-- h</div>
+      </div>
+    </div>
+
+    <button class="btn-clear" onclick="clearAll()">Clear All</button>
+  </div>
+
+  <script>
+    // ── Time input formatting ──────────────────────────────────────────────────
+    // Accepts digits, auto-inserts ":" after HH, validates on blur.
+    const inputs = ['out', 'in', 'takeoff', 'landing'];
+
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', e => handleTimeInput(e, id));
+      el.addEventListener('blur', e => validateOnBlur(e, id));
+    });
+
+    function handleTimeInput(e, id) {
+      const el = e.target;
+      // Strip everything except digits
+      let digits = el.value.replace(/\D/g, '');
+
+      if (digits.length === 0) {
+        el.value = '';
+      } else if (digits.length <= 2) {
+        el.value = digits;
+      } else {
+        // Insert colon: HHMM → HH:MM
+        el.value = digits.slice(0, 2) + ':' + digits.slice(2, 4);
+      }
+
+      el.classList.remove('error');
+      calculate();
+    }
+
+    function validateOnBlur(e, id) {
+      const el = e.target;
+      const val = el.value;
+      if (!val) return;
+
+      // Pad single digit hour: "9:30" → ensure digits only
+      const digits = val.replace(/\D/g, '');
+      if (digits.length < 4) {
+        el.classList.add('error');
+        return;
+      }
+
+      const h = parseInt(digits.slice(0, 2));
+      const m = parseInt(digits.slice(2, 4));
+
+      if (h > 23 || m > 59) {
+        el.classList.add('error');
+        document.getElementById('error-msg').textContent =
+          `Invalid time in ${id.charAt(0).toUpperCase() + id.slice(1)} field.`;
+      }
+    }
+
+    // ── Core calculation ───────────────────────────────────────────────────────
+    function parseMinutes(val) {
+      const digits = val.replace(/\D/g, '');
+      if (digits.length < 4) return null;
+      const h = parseInt(digits.slice(0, 2));
+      const m = parseInt(digits.slice(2, 4));
+      if (h > 23 || m > 59) return null;
+      return h * 60 + m;
+    }
+
+    function formatHHMM(totalMinutes) {
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    function formatDecimal(totalMinutes) {
+      return (totalMinutes / 60).toFixed(1) + ' h';
+    }
+
+    function calcDiff(startMins, endMins) {
+      let diff = endMins - startMins;
+      let overnight = false;
+      if (diff < 0) { diff += 24 * 60; overnight = true; }
+      return { diff, overnight };
+    }
+
+    function setResult(hhmmId, decimalId, overnightId, totalMins, overnight) {
+      const hhmm = document.getElementById(hhmmId);
+      const dec  = document.getElementById(decimalId);
+      const ov   = document.getElementById(overnightId);
+
+      if (totalMins === null || totalMins === 0) {
+        hhmm.textContent = '--:--';
+        hhmm.classList.add('empty');
+        dec.textContent = '-.-- h';
+        dec.classList.add('empty');
+        ov.textContent = '';
+      } else {
+        hhmm.textContent = formatHHMM(totalMins);
+        hhmm.classList.remove('empty');
+        dec.textContent = formatDecimal(totalMins);
+        dec.classList.remove('empty');
+        ov.textContent = overnight ? '↑ crosses midnight Z' : '';
+      }
+    }
+
+    function calculate() {
+      document.getElementById('error-msg').textContent = '';
+
+      // Block time
+      const outMins    = parseMinutes(document.getElementById('out').value);
+      const inMins     = parseMinutes(document.getElementById('in').value);
+      // Flight time
+      const takeoffMins = parseMinutes(document.getElementById('takeoff').value);
+      const landingMins = parseMinutes(document.getElementById('landing').value);
+
+      // Block
+      if (outMins !== null && inMins !== null) {
+        const { diff, overnight } = calcDiff(outMins, inMins);
+        setResult('block-hhmm', 'block-decimal', 'block-overnight', diff || null, overnight);
+        if (diff === 0) {
+          document.getElementById('error-msg').textContent = 'Out and In times are the same.';
+        }
+      } else {
+        setResult('block-hhmm', 'block-decimal', 'block-overnight', null, false);
+      }
+
+      // Flight
+      if (takeoffMins !== null && landingMins !== null) {
+        const { diff, overnight } = calcDiff(takeoffMins, landingMins);
+        setResult('flight-hhmm', 'flight-decimal', 'flight-overnight', diff || null, overnight);
+        if (diff === 0) {
+          document.getElementById('error-msg').textContent = 'Takeoff and Landing times are the same.';
+        }
+      } else {
+        setResult('flight-hhmm', 'flight-decimal', 'flight-overnight', null, false);
+      }
+    }
+
+    function clearAll() {
+      inputs.forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        el.classList.remove('error');
+      });
+      document.getElementById('error-msg').textContent = '';
+      setResult('block-hhmm',  'block-decimal',  'block-overnight',  null, false);
+      setResult('flight-hhmm', 'flight-decimal', 'flight-overnight', null, false);
+    }
+  </script>
+</body>
+</html>
