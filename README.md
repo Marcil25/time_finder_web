@@ -46,4 +46,4 @@ Plain HTML, CSS, and vanilla JavaScript — zero dependencies.
 
 ---
 
-**V1.1** — 10 March 2026 · © Marcil25
+**V1.2** — 10 March 2026 · © Marcil25
