@@ -337,7 +337,7 @@
         <div class="zulu-clock" id="zulu-clock"></div>
         <div class="airport-lookup">
           <input class="icao-input" id="icao-input" maxlength="4" placeholder="ICAO" autocomplete="off" spellcheck="false" />
-          <div class="local-time-display placeholder" id="local-time-display"><-- Find Local Airport Time</div>
+          <div class="local-time-display placeholder" id="local-time-display"><- Local Airport Time</div>
         </div>
       </div>
     </div>
@@ -1125,7 +1125,7 @@
       const display = document.getElementById('local-time-display');
 
       if (code.length === 0) {
-        display.textContent = '<-- Find Local Airport Time';
+        display.textContent = '<- Local Airport Time';
         display.className = 'local-time-display placeholder';
         document.getElementById('icao-input').classList.remove('icao-error');
         return;
