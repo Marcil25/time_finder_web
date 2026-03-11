@@ -113,6 +113,10 @@
       color: #ff6b6b;
     }
 
+    .local-time-display.placeholder {
+      color: #3a5f88;
+    }
+
     /* Section blocks */
     .section {
       background: #0f2236;
@@ -333,7 +337,7 @@
         <div class="zulu-clock" id="zulu-clock"></div>
         <div class="airport-lookup">
           <input class="icao-input" id="icao-input" maxlength="4" placeholder="ICAO" autocomplete="off" spellcheck="false" />
-          <div class="local-time-display" id="local-time-display"></div>
+          <div class="local-time-display placeholder" id="local-time-display"><-- Find Local Airport Time</div>
         </div>
       </div>
     </div>
@@ -1119,6 +1123,13 @@
     function updateLocalTime(now) {
       const code    = document.getElementById('icao-input').value.toUpperCase().trim();
       const display = document.getElementById('local-time-display');
+
+      if (code.length === 0) {
+        display.textContent = '<-- Find Local Airport Time';
+        display.className = 'local-time-display placeholder';
+        document.getElementById('icao-input').classList.remove('icao-error');
+        return;
+      }
 
       if (code.length < 4) {
         display.textContent = '';
