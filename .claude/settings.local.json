@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm /Users/williamm/Documents/VSCode/time_finder/time_finder_web/.claude/launch.json)",
+      "Bash(rmdir /Users/williamm/Documents/VSCode/time_finder/time_finder_web/.claude)"
+    ]
+  }
+}
